@@ -5,22 +5,23 @@ import { useState } from 'react';
 
 function App() {
   const[movies,setMovies]=useState([]);
+  const[isLoading,setIsLoading]=useState(false);
 
-  function fetchMoviesHandler(){
-      fetch("https://swapi.dev/api/films/",).then(response=>{
-        return response.json();
-      })
-      .then((data)=>{
+  async function fetchMoviesHandler(){
+      setIsLoading(true);
+      const response= await fetch("https://api.themoviedb.org/3/discover/movie?api_key=323e3fe5a8237f5319c4b400fb4bd2d9")
+      const data= await response.json();
+      
         const transformedMovies=data.results.map(movieData=>{
             return{
-              id:movieData.episode_id,
+              id:movieData.id,
               title: movieData.title,
-              openingText:movieData.opening_crawl,
+              overview:movieData.overview,
               releaseDate:movieData.release_date
             }
         })
-        setMovies(transformedMovies)
-      })
+        setMovies(transformedMovies);
+        setIsLoading(false);
   }
   return (
     <div className="App">
@@ -30,7 +31,9 @@ function App() {
      </section>
 
      <section>
-      <MovieList movies={movies}/>
+      {!isLoading && movies.length>0 && <MovieList movies={movies}/>}
+      {!isLoading && movies.length===0 && <p>Found no Movies.</p>}
+      {isLoading && <p>Loading...</p>}
      </section>
 
     </div>

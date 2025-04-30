@@ -9,7 +9,7 @@ function MovieList({ movies }) {
           key={movie.id}
           title={movie.title}
           releaseDate={movie.releaseDate}
-          openingText={movie.openingText}
+          overview={movie.overview}
         />
       ))}
     </ul>

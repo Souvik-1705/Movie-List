@@ -1,13 +1,14 @@
-import React from 'react'
+import React from 'react';
+import "../styles/Movie.css";
 
-function Movie({title,releaseDate,openingText}) {
+function Movie({title,releaseDate,overview}) {
   return (
     <li className='movie'>
         <h2>{title}</h2>
         <h3>{releaseDate}</h3>
-        <p>{openingText}</p>
+        <p>{overview}</p>
     </li>
   )
 }
 
-export default Movie
+export default Movie;
