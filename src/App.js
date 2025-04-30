@@ -1,5 +1,6 @@
 
 import './App.css';
+import AddMovie from './components/AddMovie';
 import MovieList from './components/MovieList';
 import { useEffect, useState ,useCallback} from 'react';
 
@@ -13,21 +14,23 @@ function App() {
       setError(null);
 
       try{
-        const response= await fetch("https://api.themoviedb.org/3/discover/movie?api_key=323e3fe5a8237f5319c4b400fb4bd2d9")
+        const response= await fetch("https://react-http-59d41-default-rtdb.firebaseio.com/movies.json")
         if(!response.ok){
           throw new Error("Something Went Wrong");
         }
         const data= await response.json();
-        
-          const transformedMovies=data.results.map(movieData=>{
-              return{
-                id:movieData.id,
-                title: movieData.title,
-                overview:movieData.overview,
-                releaseDate:movieData.release_date
-              }
+
+        const loadedMovies=[];
+        for(const key in data){
+          loadedMovies.push({
+            id:key,
+            title:data[key].title,
+            overview:data[key].overview,
+            releaseDate:data[key].releaseDate
           })
-          setMovies(transformedMovies);
+        }
+        
+          setMovies(loadedMovies);
          
       }
       catch(error){
@@ -40,8 +43,25 @@ function App() {
       useEffect(()=>{
         fetchMoviesHandler();
       },[fetchMoviesHandler]);
+
+      async function addMovieHandler(movie) {
+        const response = await fetch('https://react-http-59d41-default-rtdb.firebaseio.com//movies.json', {
+          method: 'POST',
+          body: JSON.stringify(movie),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const data = await response.json();
+        console.log('Added movie:', data);
+      }
+
   return (
     <div className="App">
+
+      <section>
+        <AddMovie onAddMovie={addMovieHandler}/>
+      </section>
 
      <section>
       <button onClick={fetchMoviesHandler}>Fetch Movies</button>
