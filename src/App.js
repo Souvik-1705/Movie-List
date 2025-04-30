@@ -6,22 +6,35 @@ import { useState } from 'react';
 function App() {
   const[movies,setMovies]=useState([]);
   const[isLoading,setIsLoading]=useState(false);
+  const[error,setError]=useState(null);
 
   async function fetchMoviesHandler(){
       setIsLoading(true);
-      const response= await fetch("https://api.themoviedb.org/3/discover/movie?api_key=323e3fe5a8237f5319c4b400fb4bd2d9")
-      const data= await response.json();
-      
-        const transformedMovies=data.results.map(movieData=>{
-            return{
-              id:movieData.id,
-              title: movieData.title,
-              overview:movieData.overview,
-              releaseDate:movieData.release_date
-            }
-        })
-        setMovies(transformedMovies);
-        setIsLoading(false);
+      setError(null);
+
+      try{
+        const response= await fetch("https://api.themoviedb.org/3/discover/movie?api_key=323e3fe5a8237f5319c4b400fb4bd2d9")
+        if(!response.ok){
+          throw new Error("Something Went Wrong");
+        }
+        const data= await response.json();
+        
+          const transformedMovies=data.results.map(movieData=>{
+              return{
+                id:movieData.id,
+                title: movieData.title,
+                overview:movieData.overview,
+                releaseDate:movieData.release_date
+              }
+          })
+          setMovies(transformedMovies);
+         
+      }
+      catch(error){
+        setError(error);
+      }
+      setIsLoading(false);
+    
   }
   return (
     <div className="App">
@@ -32,8 +45,9 @@ function App() {
 
      <section>
       {!isLoading && movies.length>0 && <MovieList movies={movies}/>}
-      {!isLoading && movies.length===0 && <p>Found no Movies.</p>}
-      {isLoading && <p>Loading...</p>}
+      {!isLoading && movies.length===0 && !error && <p>Found no Movies.</p>}
+      {!isLoading && error && <p>{error.message}</p>}
+      {isLoading &&  <p>Loading...</p>}
      </section>
 
     </div>
