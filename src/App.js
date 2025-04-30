@@ -1,14 +1,14 @@
 
 import './App.css';
 import MovieList from './components/MovieList';
-import { useState } from 'react';
+import { useEffect, useState ,useCallback} from 'react';
 
 function App() {
   const[movies,setMovies]=useState([]);
   const[isLoading,setIsLoading]=useState(false);
   const[error,setError]=useState(null);
 
-  async function fetchMoviesHandler(){
+  const fetchMoviesHandler= useCallback(async function fetchMoviesHandler(){
       setIsLoading(true);
       setError(null);
 
@@ -35,7 +35,11 @@ function App() {
       }
       setIsLoading(false);
     
-  }
+  },[]);
+
+      useEffect(()=>{
+        fetchMoviesHandler();
+      },[fetchMoviesHandler]);
   return (
     <div className="App">
 
