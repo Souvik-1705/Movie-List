@@ -54,7 +54,20 @@ function App() {
         });
         const data = await response.json();
         console.log('Added movie:', data);
+        fetchMoviesHandler();
       }
+
+      async function deleteMovieHandler(id) {
+        await fetch(
+          `https://react-http-59d41-default-rtdb.firebaseio.com/movies/${id}.json`,
+          {
+            method: 'DELETE',
+          }
+        );
+        
+        setMovies((prevMovies) => prevMovies.filter((movie) => movie.id !== id));
+      }
+    
 
   return (
     <div className="App">
@@ -66,13 +79,14 @@ function App() {
      <section>
       <button onClick={fetchMoviesHandler}>Fetch Movies</button>
      </section>
-
      <section>
-      {!isLoading && movies.length>0 && <MovieList movies={movies}/>}
-      {!isLoading && movies.length===0 && !error && <p>Found no Movies.</p>}
-      {!isLoading && error && <p>{error.message}</p>}
-      {isLoading &&  <p>Loading...</p>}
-     </section>
+  {!isLoading && movies.length > 0 && (
+    <MovieList movies={movies} onDelete={deleteMovieHandler} />
+  )}
+  {!isLoading && movies.length === 0 && !error && <p>Found no Movies.</p>}
+  {!isLoading && error && <p>{error.message}</p>}
+  {isLoading && <p>Loading...</p>}
+</section>
 
     </div>
   );
